@@ -1,7 +1,5 @@
-import mouse
 import keyboard
 import time
-import threading
 
 rep = 1
 speed = 1
