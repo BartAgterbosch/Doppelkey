@@ -6,10 +6,9 @@ from time import sleep
 from sys import platform
 from os import system
 
-ctypes.windll.user32.SetProcessDPIAware()
-
 if (platform == "win32"):
     clear = "cls"
+    ctypes.windll.user32.SetProcessDPIAware()
 else:
     clear = "clear"
 
