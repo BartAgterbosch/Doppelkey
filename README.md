@@ -2,10 +2,10 @@ Very simple tool that let's you record keystrokes and mouse actions, and then re
 
 Simply open the tool, enter the number of repeats, then the desired speed, then press f8 to start recording keyboard and mouse input, and press f8 to stop recording.
 To then replay the keystrokes and mouse actions, simply press f7.
-
-
-
-
+<br>
+<br>
+<br>
+<br>
 
 Known issues:
 Unable to replay the win key event, mouse speed does not adjust, causing out of sync with keyboard
