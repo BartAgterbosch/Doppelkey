@@ -7,6 +7,7 @@ from sys import platform
 from os import system
 
 ctypes.windll.user32.SetProcessDPIAware()
+
 if (platform == "win32"):
     clear = "cls"
 else:
@@ -54,7 +55,6 @@ while (True):
             rep += 1
 
     def mouseplay(rep, num, speed, pos):
-        #rep = rep
         while (rep <= num):
             mouse.move(pos[0], pos[1], absolute=True, duration=0)
             mouse.play(mouse_recording, speed_factor=speed, include_wheel=True, include_clicks=True)
