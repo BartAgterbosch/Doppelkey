@@ -7,5 +7,4 @@ To then replay the keystrokes and mouse actions, simply press f7.
 <br>
 <br>
 
-Known issues:
-Unable to replay the win key event, mouse speed does not adjust, causing out of sync with keyboard
+When using keyboard and mouse in combination, set speed to 1 as they move out of sync, also windows key does not work
