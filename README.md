@@ -7,4 +7,9 @@ To then replay the keystrokes and mouse actions, simply press f7.
 <br>
 <br>
 
-When using keyboard and mouse in combination, set speed to 1 as they move out of sync, also windows key does not work
+Fixed windows key in latest release, if you wish to build yourself then for now use keyboard library from my keyboard repo until the pull request is accepted for the original repo
+<br>
+<bbr>
+
+
+When using keyboard and mouse in combination, set speed to 1 as they move out of sync
