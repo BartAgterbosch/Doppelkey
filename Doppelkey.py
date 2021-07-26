@@ -1,130 +1,350 @@
 import mouse
 import keyboard
-import ctypes
+import sys
+from webbrowser import open as launch
 from threading import Thread
 from time import sleep
-from sys import platform
-from os import system
-
-if (platform == "win32"):
-    clear = "cls"
-    ctypes.windll.user32.SetProcessDPIAware()
-else:
-    clear = "clear"
+from os import path
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-while (True):
-    rep = 1
-    speed = 1
+doppelkey_icon = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./doppelkey.ico")
+doppelkey_img = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./doppelkey_img.png")
+title = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title.png")
+title_done = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_done.png")
+title_play = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_play.png")
+title_rec = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_rec.png")
 
-    
-#Funtions
-    def replay():
-        if (keyboard.read_key() == "f7"):
-            keyplaythread = Thread(target=lambda :keyplay(rep, num, speed))
-            mouseplaythread = Thread(target=lambda :mouseplay(rep, num, speed, pos))
+play_unpressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_unpressed.png")
+play_pressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_pressed.png")
+play_disabled = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_disabled.png")
 
-            keyplaythread.start()
-            mouseplaythread.start()
+rec_unpressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_unpressed.png")
+rec_pressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_pressed.png")
+rec_disabled = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_disabled.png")
 
-            keyplaythread.join()
-            mouseplaythread.join()
-            print("done.\n")
-            pass
-        elif (keyboard.read_key()) == "f8":
-            return True
+
+global rep
+global speed
+global record_process
+global thread_count
+global mouse_recording
+
+mouse_recording = []
+record_process = False
+thread_count = 0
+
+
+def instructions():
+        launch("https://github.com/BartAgterbosch/Doppelkey/blob/main/README.md")
+
+
+def playthread():
+        num = 1
+        speed = speedbox.value()
+        rep = repbox.value()
+
+        speedbox.setDisabled(True)
+        repbox.setDisabled(True)
+        playbutton.setChecked(True)
+        sleep(0.2)
+        playbutton.setChecked(False)
+        sleep(0.2)
+        playbutton.setDisabled(True)
+        recbutton.setDisabled(True)
+        titleframe.setPixmap(QtGui.QPixmap(title_play))       
+
+        while (num <= rep):
+                mouse.move(pos[0], pos[1], absolute=True, duration=0)
+                keyboard.play(keyboard_recordings, speed_factor=speed)
+                mouse.play(mouse_recording, speed_factor=speed, include_wheel=True, include_clicks=True)
+                num += 1
+        playbutton.setDisabled(False)
+        recbutton.setDisabled(False)
+        speedbox.setDisabled(False)
+        repbox.setDisabled(False)
+        titleframe.setPixmap(QtGui.QPixmap(title))
+
+
+def play():
+        playthreadbg = Thread(target=playthread)
+        playthreadbg.daemon = True
+        playthreadbg.start()
+
+
+def recordstart():
+        global record_process
+        global rec_present
+        global mouse_recording
+        global pos
+
+        rec_present = False
+        record_process = True
+        mouse_recording = []
+
+        if (playbutton.isEnabled()): rec_present = True
+        recbutton.setChecked(True)
+        sleep(0.2)
+        recbutton.setChecked(False)
+        sleep(0.2)
+        playbutton.setDisabled(True)
+        repbox.setDisabled(True)
+        speedbox.setDisabled(True)
+        titleframe.setPixmap(QtGui.QPixmap(title_rec))
+        pos = mouse.get_position()
+        keyboard.start_recording()
+        mouse.hook(mouse_recording.append)
+        
+
+def recordstop():
+        global keyboard_recordings
+        global mouse_recording
+        global rec_present
+        global record_process
+
+        sleep(0.2)
+        recbutton.setChecked(False)
+        keyboard_recordings = keyboard.stop_recording()
+        mouse.unhook(mouse_recording.append)
+        playbutton.setDisabled(False)
+        repbox.setDisabled(False)
+        speedbox.setDisabled(False)
+        titleframe.setPixmap(QtGui.QPixmap(title_done))
+
+        if (rec_present): playbutton.setDisabled(False)
+        record_process = False
+
+
+def record():
+        global thread_count
+        global recordstartthread
+        global recordstopthread 
+
+        if (record_process):
+                if (thread_count >= 1):
+                        recordstopthread = Thread(target=recordstop)
+                        recordstopthread.daemon = True
+                recordstopthread.start()
         else:
-            system(clear)
-            print("Exiting")
-            sleep(0.3)
-            system(clear)
-            print("Exiting.")
-            sleep(0.3)
-            system(clear)
-            print("Exiting..")
-            sleep(0.3)
-            system(clear)
-            print("Thank you for using Doppelkey, goodbye.")
-            sleep(0.3)
-            raise SystemExit()
+                if (thread_count >= 1):
+                        recordstartthread = Thread(target=recordstart)
+                        recordstartthread.daemon = True
+                recordstartthread.start()
+        thread_count += 1
 
-    def keyplay(rep, num, speed):
-        while (rep <= num):            
-            keyboard.play(keyboard_recording, speed_factor=speed)
-            rep += 1
-
-    def mouseplay(rep, num, speed, pos):
-        while (rep <= num):
-            mouse.move(pos[0], pos[1], absolute=True, duration=0)
-            mouse.play(mouse_recording, speed_factor=speed, include_wheel=True, include_clicks=True)
-            rep += 1
+        if (thread_count == 1):
+                f7thread = Thread(target=hotkey_f7)
+                f7thread.daemon = True
+                f7thread.start()
 
 
-#First run
-    while (True):
-        num = input("Number of repeats:\n")
-        if (num.isdigit):
-            num = int(num)
-            if (num <= 50):
-                break
-            if (num > 50):
-                print("The number you've chosen is over 50, are you certain this number is correct and not too high?\n")
-                if (input("You can still cancel now, to cancel press 'C' if not, press any other key:\n").lower() == "c"):
-                    pass
-                else:
-                    break
-        else:
-            print("Invalid input, try again.")
-            pass
+def hotkey_f8():
+        while (True):
+                keyboard.wait("f8")
+                record()
 
-    print("Leave the replay speed empty to use default speed, just press enter.")
-    while (True):
-        speed = input("Set the speed (Max of 40, default = 1):\n")
-        if (speed == ""):
-            speed = 1
-            break
-        if (speed.isdigit):
-            speed = int(speed)
-            if (speed <= 40):
-                break
-            if (speed > 40):
-                print("Speed is set too high, please enter a speed below 40.\n")
-                pass
-        else:
-            print("Invalid input, try again.")
-            pass
-    print("Press f8 to start recording, and press f8 again to stop recording.")
-    mouse_recording = []
-    keyboard.wait("f8")
-    pos = mouse.get_position()
-    print("start")
-    mouse.hook(mouse_recording.append)
-    keyboard.start_recording()
-    keyboard.wait("f8")
-    print("stop")
-    mouse.unhook(mouse_recording.append)
-    keyboard_recording = keyboard.stop_recording()
 
-    print("Press f7 to replay the recording.")
-    keyboard.wait("f7")
-    sleep(1)
+def hotkey_f7():
+        while (True):
+                keyboard.wait("f7")
+                play()
 
-    keyplaythread = Thread(target=lambda :keyplay(rep, num, speed))
-    mouseplaythread = Thread(target=lambda :mouseplay(rep, num, speed, pos))
 
-    keyplaythread.start()
-    mouseplaythread.start()
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(654, 181)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+        MainWindow.setSizePolicy(sizePolicy)
+        MainWindow.setMinimumSize(QtCore.QSize(654, 181))
+        MainWindow.setMaximumSize(QtCore.QSize(654, 181))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        MainWindow.setFont(font)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(doppelkey_icon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
+        MainWindow.setAutoFillBackground(False)
+        MainWindow.setStyleSheet("background-color: rgb(83, 83, 83);")
+        MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
 
-    keyplaythread.join()
-    mouseplaythread.join()
-    system(clear)
-    print("done\n")
-    
+        self.repGroup = QtWidgets.QGroupBox(self.centralwidget)
+        self.repGroup.setGeometry(QtCore.QRect(50, 90, 121, 21))
+        self.repGroup.setTitle("")
+        self.repGroup.setObjectName("repGroup")
+        self.repBox = QtWidgets.QSpinBox(self.repGroup)
+        self.repBox.setGeometry(QtCore.QRect(80, 0, 42, 22))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        font.setBold(True)
+        font.setWeight(75)
+        self.repBox.setMinimum(1)
+        self.repBox.setFont(font)
+        self.repBox.setAutoFillBackground(False)
+        self.repBox.setStyleSheet("color: rgb(255, 255, 255);")
+        self.repBox.setWrapping(False)
+        self.repBox.setFrame(False)
+        self.repBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.UpDownArrows)
+        self.repBox.setProperty("value", 1)
+        self.repBox.setObjectName("repBox")
+        self.label = QtWidgets.QLabel(self.repGroup)
+        self.label.setGeometry(QtCore.QRect(0, 0, 81, 21))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.label.setStyleSheet("background-color: rgb(83, 83, 83);\n""color: rgb(255, 255, 255);")
+        self.label.setObjectName("label")
 
-#Rerun
-    while (True):
-        print("If you wish to replay the recordings again, press f7.")
-        print("If you wish to start over, press f8.")
-        print("Press any other key to quit the application.")
-        if (replay()):
-            break
+        self.speedGroup = QtWidgets.QGroupBox(self.centralwidget)
+        self.speedGroup.setGeometry(QtCore.QRect(50, 120, 121, 21))
+        self.speedGroup.setTitle("")
+        self.speedGroup.setObjectName("speedGroup")
+        self.speedBox = QtWidgets.QSpinBox(self.speedGroup)
+        self.speedBox.setGeometry(QtCore.QRect(80, 0, 42, 22))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        font.setBold(True)
+        font.setWeight(75)
+        self.speedBox.setMinimum(1)
+        self.speedBox.setFont(font)
+        self.speedBox.setStyleSheet("color: rgb(255, 255, 255);")
+        self.speedBox.setFrame(False)
+        self.speedBox.setProperty("value", 1)
+        self.speedBox.setObjectName("speedBox")
+        self.label_2 = QtWidgets.QLabel(self.speedGroup)
+        self.label_2.setGeometry(QtCore.QRect(0, 0, 81, 21))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_2.setFont(font)
+        self.label_2.setStyleSheet("background-color: rgb(83, 83, 83);\n""color: rgb(255, 255, 255);")
+        self.label_2.setObjectName("label_2")
+
+        self.playButton = QtWidgets.QPushButton(self.centralwidget)
+        self.playButton.setGeometry(QtCore.QRect(470, 80, 71, 61))
+        self.playButton.setWhatsThis("")
+        self.playButton.setStyleSheet("border: none;\n""margin: 0px;\n""padding: 0px;")
+        self.playButton.setText("")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(play_unpressed), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(play_pressed), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon1.addPixmap(QtGui.QPixmap(play_disabled), QtGui.QIcon.Disabled, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(play_disabled), QtGui.QIcon.Disabled, QtGui.QIcon.On)
+        icon1.addPixmap(QtGui.QPixmap(play_unpressed), QtGui.QIcon.Active, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(play_pressed), QtGui.QIcon.Active, QtGui.QIcon.On)
+        icon1.addPixmap(QtGui.QPixmap(play_unpressed), QtGui.QIcon.Selected, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(play_pressed), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        self.playButton.setIcon(icon1)
+        self.playButton.setIconSize(QtCore.QSize(70, 70))
+        self.playButton.setCheckable(True)
+        self.playButton.setFlat(True)
+        self.playButton.setDisabled(True)
+        self.playButton.setObjectName("playButton")
+
+        self.recButton = QtWidgets.QPushButton(self.centralwidget)
+        self.recButton.setGeometry(QtCore.QRect(380, 80, 71, 61))
+        self.recButton.setAutoFillBackground(False)
+        self.recButton.setStyleSheet("border: none;\n""margin: 0px;\n""padding: 0px;")
+        self.recButton.setText("")
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(rec_unpressed), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(rec_pressed), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon2.addPixmap(QtGui.QPixmap(rec_disabled), QtGui.QIcon.Disabled, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(rec_disabled), QtGui.QIcon.Disabled, QtGui.QIcon.On)
+        icon2.addPixmap(QtGui.QPixmap(rec_unpressed), QtGui.QIcon.Active, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(rec_pressed), QtGui.QIcon.Active, QtGui.QIcon.On)
+        icon2.addPixmap(QtGui.QPixmap(rec_unpressed), QtGui.QIcon.Selected, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(rec_pressed), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        self.recButton.setIcon(icon2)
+        self.recButton.setIconSize(QtCore.QSize(70, 70))
+        self.recButton.setCheckable(True)
+        self.recButton.setFlat(True)
+        self.recButton.setObjectName("recButton")
+
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(doppelkey_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.info = QtWidgets.QPushButton(self.centralwidget)
+        self.info.setEnabled(True)
+        self.info.setGeometry(QtCore.QRect(600, 120, 41, 41))
+        self.info.setText("")
+        self.info.setIcon(icon3)
+        self.info.setObjectName("info")
+        self.info.setToolTip("<html><head/><body><p>Instructions</p></body></html>")
+        self.info.setFlat(True)
+
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(0, 0, 651, 181))
+        self.label_4.setText("")
+        self.label_4.setTextFormat(QtCore.Qt.RichText)
+        self.label_4.setPixmap(QtGui.QPixmap(title))
+        self.label_4.setObjectName("label_4")
+
+        self.label_4.raise_()
+        self.repGroup.raise_()
+        self.speedGroup.raise_()
+        self.playButton.raise_()
+        self.recButton.raise_()
+        self.info.raise_()
+
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "Doppelkey"))
+        self.label.setText(_translate("MainWindow", "Repeats:"))
+        self.label_2.setText(_translate("MainWindow", "Speed:"))
+
+        global playbutton
+        global recbutton
+        global repbox
+        global speedbox
+        global titleframe
+        global recordstopthread
+        global recordstartthread
+
+        recordstopthread = Thread(target=recordstop)
+        recordstartthread = Thread(target=recordstart)
+        f8thread = Thread(target=hotkey_f8)
+
+        recordstopthread.daemon = True
+        recordstartthread.daemon = True
+        f8thread.daemon = True
+
+        playbutton = self.playButton
+        recbutton = self.recButton
+        repbox = self.repBox
+        speedbox = self.speedBox
+        titleframe = self.label_4
+        instruction_launch = self.info
+
+        playbutton.clicked.connect(play)
+        recbutton.clicked.connect(record)
+        instruction_launch.clicked.connect(instructions)
+
+        f8thread.start()
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
