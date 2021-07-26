@@ -29,6 +29,7 @@ global speed
 global record_process
 global thread_count
 global mouse_recording
+global playthreadbg
 
 mouse_recording = []
 record_process = False
@@ -67,6 +68,9 @@ def playthread():
 
 
 def play():
+        global playing
+        playing = True
+
         playthreadbg = Thread(target=playthread)
         playthreadbg.daemon = True
         playthreadbg.start()
@@ -94,7 +98,7 @@ def recordstart():
         pos = mouse.get_position()
         keyboard.start_recording()
         mouse.hook(mouse_recording.append)
-        
+
 
 def recordstop():
         global keyboard_recordings
@@ -168,7 +172,7 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(doppelkey_icon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setAutoFillBackground(False)
-        MainWindow.setStyleSheet("background-color: rgb(83, 83, 83);")
+        MainWindow.setStyleSheet("background-color: rgb(66, 66, 66);")
         MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -200,7 +204,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.label.setFont(font)
-        self.label.setStyleSheet("background-color: rgb(83, 83, 83);\n""color: rgb(255, 255, 255);")
+        self.label.setStyleSheet("background-color: rgb(66, 66, 66);\n""color: rgb(255, 255, 255);")
         self.label.setObjectName("label")
 
         self.speedGroup = QtWidgets.QGroupBox(self.centralwidget)
@@ -227,7 +231,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.label_2.setFont(font)
-        self.label_2.setStyleSheet("background-color: rgb(83, 83, 83);\n""color: rgb(255, 255, 255);")
+        self.label_2.setStyleSheet("background-color: rgb(66, 66, 66);\n""color: rgb(255, 255, 255);")
         self.label_2.setObjectName("label_2")
 
         self.playButton = QtWidgets.QPushButton(self.centralwidget)
@@ -317,6 +321,7 @@ class Ui_MainWindow(object):
         global titleframe
         global recordstopthread
         global recordstartthread
+        global playthreadbg
 
         recordstopthread = Thread(target=recordstop)
         recordstartthread = Thread(target=recordstart)
