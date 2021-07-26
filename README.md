@@ -1,15 +1,8 @@
-Very simple tool that let's you record keystrokes and mouse actions, and then replay them a specified number of times at a specified speed.
+Simple GUI tool that let's you record keystrokes and mouse actions, and then replay them a specified number of times at a specified speed.
 
-Simply open the tool, enter the number of repeats, then the desired speed, then press f8 to start recording keyboard and mouse input, and press f8 to stop recording.
-To then replay the keystrokes and mouse actions, simply press f7.
+Simply open the tool, enter the number of repeats, then the desired speed, then press either f8 or the red record to start recording keyboard and mouse input, and press f8 or the red record a second time to stop recording.
+To then replay the keystrokes and mouse actions, simply press f7 or the green play button.
 <br>
 <br>
 <br>
-<br>
-
-Fixed windows key in latest release, if you wish to build yourself then for now use keyboard library from my keyboard repo until the pull request is accepted for the original repo
-<br>
-<bbr>
-
-
-When using keyboard and mouse in combination, set speed to 1 as they move out of sync
+Make sure to do your due dilligence before pressing play, as there is currently no way to cancel the play loop, and you will lose keyboard and mouse control in the process
