@@ -231,7 +231,7 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
 
         self.playButton = QtWidgets.QPushButton(self.centralwidget)
-        self.playButton.setGeometry(QtCore.QRect(470, 80, 71, 61))
+        self.playButton.setGeometry(QtCore.QRect(350, 85, 71, 61))
         self.playButton.setWhatsThis("")
         self.playButton.setStyleSheet("border: none;\n""margin: 0px;\n""padding: 0px;")
         self.playButton.setText("")
@@ -252,7 +252,7 @@ class Ui_MainWindow(object):
         self.playButton.setObjectName("playButton")
 
         self.recButton = QtWidgets.QPushButton(self.centralwidget)
-        self.recButton.setGeometry(QtCore.QRect(380, 80, 71, 61))
+        self.recButton.setGeometry(QtCore.QRect(245, 85, 71, 61))
         self.recButton.setAutoFillBackground(False)
         self.recButton.setStyleSheet("border: none;\n""margin: 0px;\n""padding: 0px;")
         self.recButton.setText("")
