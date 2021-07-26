@@ -9,4 +9,4 @@ Clicking the icon on the bottom right will take you to this Readme page
 <br>
 <br>
 <br>
-Make sure to do your due dilligence before pressing play, as there is currently no way to cancel the play loop, and you will lose keyboard and mouse control in the process
+Make sure to do your due dilligence before pressing play, as there is currently no way to cancel the play loop, and you will lose keyboard and mouse control in the process, meaning you have no other option but to wait until all repeats have been performed
