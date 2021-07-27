@@ -8,22 +8,6 @@ from os import path
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-doppelkey_icon = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./doppelkey.ico")
-doppelkey_img = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./doppelkey_img.png")
-title = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title.png")
-title_done = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_done.png")
-title_play = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_play.png")
-title_rec = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_rec.png")
-
-play_unpressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_unpressed.png")
-play_pressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_pressed.png")
-play_disabled = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_disabled.png")
-
-rec_unpressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_unpressed.png")
-rec_pressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_pressed.png")
-rec_disabled = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_disabled.png")
-
-
 global rep
 global speed
 global record_process
@@ -35,16 +19,37 @@ mouse_recording = []
 record_process = False
 thread_count = 0
 
+doppelkey_icon = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./doppelkey.ico")
+doppelkey_img = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./doppelkey_img.png")
+
+title = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title.png")
+title_rec = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_rec.png")
+title_done = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_done.png")
+title_play = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_play.png")
+title_stop = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./title_stop.png")
+
+play_unpressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_unpressed.png")
+play_pressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_pressed.png")
+play_disabled = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./play_disabled.png")
+
+rec_unpressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_unpressed.png")
+rec_pressed = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_pressed.png")
+rec_disabled = path.join(getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__))),"./rec_disabled.png")
+
 
 def instructions():
         launch("https://github.com/BartAgterbosch/Doppelkey/blob/main/README.md")
 
 
 def playthread():
+        global terminate
+
         num = 1
+        terminate = False
         speed = speedbox.value()
         rep = repbox.value()
-
+        
+        infobutton.setDisabled(True)
         speedbox.setDisabled(True)
         repbox.setDisabled(True)
         playbutton.setChecked(True)
@@ -55,7 +60,7 @@ def playthread():
         recbutton.setDisabled(True)
         titleframe.setPixmap(QtGui.QPixmap(title_play))       
 
-        while (num <= rep):
+        while ((num <= rep) and (not terminate)):
                 mouse.move(pos[0], pos[1], absolute=True, duration=0)
                 keyboard.play(keyboard_recordings, speed_factor=speed)
                 mouse.play(mouse_recording, speed_factor=speed, include_wheel=True, include_clicks=True)
@@ -64,13 +69,12 @@ def playthread():
         recbutton.setDisabled(False)
         speedbox.setDisabled(False)
         repbox.setDisabled(False)
+        infobutton.setDisabled(False)
+        terminate = True
         titleframe.setPixmap(QtGui.QPixmap(title))
 
 
 def play():
-        global playing
-        playing = True
-
         playthreadbg = Thread(target=playthread)
         playthreadbg.daemon = True
         playthreadbg.start()
@@ -91,6 +95,7 @@ def recordstart():
         sleep(0.2)
         recbutton.setChecked(False)
         sleep(0.2)
+        infobutton.setDisabled(True)
         playbutton.setDisabled(True)
         repbox.setDisabled(True)
         speedbox.setDisabled(True)
@@ -110,12 +115,13 @@ def recordstop():
         recbutton.setChecked(False)
         keyboard_recordings = keyboard.stop_recording()
         mouse.unhook(mouse_recording.append)
+        infobutton.setDisabled(False)
         playbutton.setDisabled(False)
         repbox.setDisabled(False)
         speedbox.setDisabled(False)
         titleframe.setPixmap(QtGui.QPixmap(title_done))
 
-        if (rec_present): playbutton.setDisabled(False)
+        if (rec_present): playbutton.setDisabled(False) 
         record_process = False
 
 
@@ -149,9 +155,16 @@ def hotkey_f8():
 
 
 def hotkey_f7():
+        global terminate
+
         while (True):
                 keyboard.wait("f7")
-                play()
+
+                if (terminate):
+                        play()
+                else:
+                        terminate = True
+                        titleframe.setPixmap(QtGui.QPixmap(title_stop))
 
 
 class Ui_MainWindow(object):
@@ -322,6 +335,8 @@ class Ui_MainWindow(object):
         global recordstopthread
         global recordstartthread
         global playthreadbg
+        global infobutton
+        global terminate
 
         recordstopthread = Thread(target=recordstop)
         recordstartthread = Thread(target=recordstart)
@@ -330,18 +345,18 @@ class Ui_MainWindow(object):
         recordstopthread.daemon = True
         recordstartthread.daemon = True
         f8thread.daemon = True
+        terminate = True
 
         playbutton = self.playButton
         recbutton = self.recButton
         repbox = self.repBox
         speedbox = self.speedBox
         titleframe = self.label_4
-        instruction_launch = self.info
+        infobutton = self.info
 
         playbutton.clicked.connect(play)
         recbutton.clicked.connect(record)
-        instruction_launch.clicked.connect(instructions)
-
+        infobutton.clicked.connect(instructions)
         f8thread.start()
 
 
