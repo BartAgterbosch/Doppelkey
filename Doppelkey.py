@@ -7,13 +7,7 @@ from time import sleep
 from os import path
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
-global rep
-global speed
-global record_process
-global thread_count
 global mouse_recording
-global playthreadbg
 
 mouse_recording = []
 record_process = False
@@ -128,7 +122,6 @@ def recordstop():
 def record():
         global thread_count
         global recordstartthread
-        global recordstopthread 
 
         if (record_process):
                 if (thread_count >= 1):
@@ -156,7 +149,6 @@ def hotkey_f8():
 
 def hotkey_f7():
         global terminate
-
         while (True):
                 keyboard.wait("f7")
 
@@ -332,9 +324,7 @@ class Ui_MainWindow(object):
         global repbox
         global speedbox
         global titleframe
-        global recordstopthread
         global recordstartthread
-        global playthreadbg
         global infobutton
         global terminate
 
