@@ -161,37 +161,43 @@ def hotkey_f7():
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(654, 181)
+# Main window
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(doppelkey_icon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(654, 181)
         MainWindow.setSizePolicy(sizePolicy)
         MainWindow.setMinimumSize(QtCore.QSize(654, 181))
         MainWindow.setMaximumSize(QtCore.QSize(654, 181))
-        font = QtGui.QFont()
-        font.setFamily("Roboto")
-        MainWindow.setFont(font)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(doppelkey_icon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("background-color: rgb(66, 66, 66);")
         MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        MainWindow.setFont(font)
+
+
+# Start repgroup
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-
         self.repGroup = QtWidgets.QGroupBox(self.centralwidget)
         self.repGroup.setGeometry(QtCore.QRect(50, 90, 121, 21))
         self.repGroup.setTitle("")
         self.repGroup.setObjectName("repGroup")
-        self.repBox = QtWidgets.QSpinBox(self.repGroup)
-        self.repBox.setGeometry(QtCore.QRect(80, 0, 42, 22))
+
+        global repbox
         font = QtGui.QFont()
         font.setFamily("Roboto")
         font.setBold(True)
         font.setWeight(75)
+        self.repBox = QtWidgets.QSpinBox(self.repGroup)
+        self.repBox.setGeometry(QtCore.QRect(80, 0, 42, 22))
         self.repBox.setMinimum(1)
         self.repBox.setFont(font)
         self.repBox.setAutoFillBackground(False)
@@ -201,49 +207,55 @@ class Ui_MainWindow(object):
         self.repBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.UpDownArrows)
         self.repBox.setProperty("value", 1)
         self.repBox.setObjectName("repBox")
-        self.label = QtWidgets.QLabel(self.repGroup)
-        self.label.setGeometry(QtCore.QRect(0, 0, 81, 21))
+        repbox = self.repBox
+
         font = QtGui.QFont()
         font.setFamily("Roboto")
         font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
+        self.label = QtWidgets.QLabel(self.repGroup)
+        self.label.setGeometry(QtCore.QRect(0, 0, 81, 21))
         self.label.setFont(font)
         self.label.setStyleSheet("background-color: rgb(66, 66, 66);\n""color: rgb(255, 255, 255);")
         self.label.setObjectName("label")
+# End repgroup
 
+# Start speedgroup
         self.speedGroup = QtWidgets.QGroupBox(self.centralwidget)
         self.speedGroup.setGeometry(QtCore.QRect(50, 120, 121, 21))
         self.speedGroup.setTitle("")
         self.speedGroup.setObjectName("speedGroup")
-        self.speedBox = QtWidgets.QSpinBox(self.speedGroup)
-        self.speedBox.setGeometry(QtCore.QRect(80, 0, 42, 22))
+
+        global speedbox
         font = QtGui.QFont()
         font.setFamily("Roboto")
         font.setBold(True)
         font.setWeight(75)
+        self.speedBox = QtWidgets.QSpinBox(self.speedGroup)
+        self.speedBox.setGeometry(QtCore.QRect(80, 0, 42, 22))
         self.speedBox.setMinimum(1)
         self.speedBox.setFont(font)
         self.speedBox.setStyleSheet("color: rgb(255, 255, 255);")
         self.speedBox.setFrame(False)
         self.speedBox.setProperty("value", 1)
         self.speedBox.setObjectName("speedBox")
-        self.label_2 = QtWidgets.QLabel(self.speedGroup)
-        self.label_2.setGeometry(QtCore.QRect(0, 0, 81, 21))
+        speedbox = self.speedBox
+        
         font = QtGui.QFont()
         font.setFamily("Roboto")
         font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
+        self.label_2 = QtWidgets.QLabel(self.speedGroup)
+        self.label_2.setGeometry(QtCore.QRect(0, 0, 81, 21))
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("background-color: rgb(66, 66, 66);\n""color: rgb(255, 255, 255);")
         self.label_2.setObjectName("label_2")
+# End speedgroup
 
-        self.playButton = QtWidgets.QPushButton(self.centralwidget)
-        self.playButton.setGeometry(QtCore.QRect(350, 85, 71, 61))
-        self.playButton.setWhatsThis("")
-        self.playButton.setStyleSheet("border: none;\n""margin: 0px;\n""padding: 0px;")
-        self.playButton.setText("")
+# Play button
+        global playbutton
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(play_unpressed), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         icon1.addPixmap(QtGui.QPixmap(play_pressed), QtGui.QIcon.Normal, QtGui.QIcon.On)
@@ -253,18 +265,21 @@ class Ui_MainWindow(object):
         icon1.addPixmap(QtGui.QPixmap(play_pressed), QtGui.QIcon.Active, QtGui.QIcon.On)
         icon1.addPixmap(QtGui.QPixmap(play_unpressed), QtGui.QIcon.Selected, QtGui.QIcon.Off)
         icon1.addPixmap(QtGui.QPixmap(play_pressed), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        self.playButton = QtWidgets.QPushButton(self.centralwidget)
+        self.playButton.setGeometry(QtCore.QRect(350, 85, 71, 61))
+        self.playButton.setWhatsThis("")
+        self.playButton.setStyleSheet("border: none;\n""margin: 0px;\n""padding: 0px;")
+        self.playButton.setText("")
         self.playButton.setIcon(icon1)
         self.playButton.setIconSize(QtCore.QSize(70, 70))
         self.playButton.setCheckable(True)
         self.playButton.setFlat(True)
         self.playButton.setDisabled(True)
         self.playButton.setObjectName("playButton")
+        playbutton = self.playButton
 
-        self.recButton = QtWidgets.QPushButton(self.centralwidget)
-        self.recButton.setGeometry(QtCore.QRect(245, 85, 71, 61))
-        self.recButton.setAutoFillBackground(False)
-        self.recButton.setStyleSheet("border: none;\n""margin: 0px;\n""padding: 0px;")
-        self.recButton.setText("")
+# Record button
+        global recbutton
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(rec_unpressed), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         icon2.addPixmap(QtGui.QPixmap(rec_pressed), QtGui.QIcon.Normal, QtGui.QIcon.On)
@@ -274,12 +289,20 @@ class Ui_MainWindow(object):
         icon2.addPixmap(QtGui.QPixmap(rec_pressed), QtGui.QIcon.Active, QtGui.QIcon.On)
         icon2.addPixmap(QtGui.QPixmap(rec_unpressed), QtGui.QIcon.Selected, QtGui.QIcon.Off)
         icon2.addPixmap(QtGui.QPixmap(rec_pressed), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        self.recButton = QtWidgets.QPushButton(self.centralwidget)
+        self.recButton.setGeometry(QtCore.QRect(245, 85, 71, 61))
+        self.recButton.setAutoFillBackground(False)
+        self.recButton.setStyleSheet("border: none;\n""margin: 0px;\n""padding: 0px;")
+        self.recButton.setText("")
         self.recButton.setIcon(icon2)
         self.recButton.setIconSize(QtCore.QSize(70, 70))
         self.recButton.setCheckable(True)
         self.recButton.setFlat(True)
         self.recButton.setObjectName("recButton")
+        recbutton = self.recButton
 
+# Information button
+        global infobutton
         icon3 = QtGui.QIcon()
         icon3.addPixmap(QtGui.QPixmap(doppelkey_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.info = QtWidgets.QPushButton(self.centralwidget)
@@ -290,15 +313,20 @@ class Ui_MainWindow(object):
         self.info.setObjectName("info")
         self.info.setToolTip("<html><head/><body><p>Instructions</p></body></html>")
         self.info.setFlat(True)
+        infobutton = self.info
 
-        self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(0, 0, 651, 181))
-        self.label_4.setText("")
-        self.label_4.setTextFormat(QtCore.Qt.RichText)
-        self.label_4.setPixmap(QtGui.QPixmap(title))
-        self.label_4.setObjectName("label_4")
+# Title frame
+        global titleframe
+        self.frame = QtWidgets.QLabel(self.centralwidget)
+        self.frame.setGeometry(QtCore.QRect(0, 0, 651, 181))
+        self.frame.setText("")
+        self.frame.setTextFormat(QtCore.Qt.RichText)
+        self.frame.setPixmap(QtGui.QPixmap(title))
+        self.frame.setObjectName("frame")
+        self.frame.raise_()
+        titleframe = self.frame
 
-        self.label_4.raise_()
+# Initialize widgets
         self.repGroup.raise_()
         self.speedGroup.raise_()
         self.playButton.raise_()
@@ -318,14 +346,9 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Doppelkey"))
         self.label.setText(_translate("MainWindow", "Repeats:"))
         self.label_2.setText(_translate("MainWindow", "Speed:"))
-
-        global playbutton
-        global recbutton
-        global repbox
-        global speedbox
-        global titleframe
+        
+        
         global recordstartthread
-        global infobutton
         global terminate
 
         recordstopthread = Thread(target=recordstop)
@@ -336,13 +359,6 @@ class Ui_MainWindow(object):
         recordstartthread.daemon = True
         f8thread.daemon = True
         terminate = True
-
-        playbutton = self.playButton
-        recbutton = self.recButton
-        repbox = self.repBox
-        speedbox = self.speedBox
-        titleframe = self.label_4
-        infobutton = self.info
 
         playbutton.clicked.connect(play)
         recbutton.clicked.connect(record)
